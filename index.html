@@ -27,6 +27,41 @@
     cursor: none;
   }
 
+  /* Audio Toggle Button Styles */
+  .music-control {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 10000;
+    background: rgba(107, 45, 94, 0.4);
+    border: 1px solid var(--rose);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--rose);
+    font-size: 1.2rem;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(232, 160, 180, 0.3);
+  }
+  .music-control:hover {
+    transform: scale(1.1);
+    background: rgba(107, 45, 94, 0.6);
+    box-shadow: 0 0 25px rgba(232, 160, 180, 0.5);
+  }
+  .music-control.playing {
+    animation: musicPulse 2s infinite;
+  }
+  @keyframes musicPulse {
+    0% { box-shadow: 0 0 0 0px rgba(232, 160, 180, 0.6); }
+    100% { box-shadow: 0 0 0 15px rgba(232, 160, 180, 0); }
+  }
+
+  /* Custom Cursor Styles */
   .cursor {
     position: fixed;
     width: 12px; height: 12px;
@@ -49,6 +84,7 @@
     transition: left 0.12s ease, top 0.12s ease;
   }
 
+  /* Background Elements */
   .stars {
     position: fixed;
     top: 0; left: 0;
@@ -83,6 +119,7 @@
     100% { transform: translateY(-10vh) rotate(360deg) translateX(var(--dx, 50px)); opacity: 0; }
   }
 
+  /* Hero Section */
   .hero {
     position: relative;
     min-height: 100vh;
@@ -243,6 +280,7 @@
   }
   .section-title em { font-style: italic; color: var(--blush); }
 
+  /* Memory Grid */
   .memories-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -287,6 +325,7 @@
     font-style: italic;
   }
 
+  /* Letter Styles */
   .letter-wrap {
     background: linear-gradient(160deg, rgba(107,45,94,0.15), rgba(26,15,30,0.8));
     border: 1px solid rgba(201,168,76,0.25);
@@ -322,6 +361,7 @@
     display: block;
   }
 
+  /* Milestone Timeline & Images */
   .timeline {
     position: relative;
     margin-top: 3rem;
@@ -336,7 +376,7 @@
   }
   .timeline-item {
     position: relative;
-    padding: 0 0 3rem 2.5rem;
+    padding: 0 0 4rem 2.5rem;
   }
   .timeline-dot {
     position: absolute;
@@ -346,6 +386,7 @@
     border-radius: 50%;
     box-shadow: 0 0 12px var(--rose);
     animation: dotPulse 2.5s ease-in-out infinite;
+    z-index: 3;
   }
   @keyframes dotPulse {
     0%, 100% { box-shadow: 0 0 8px var(--rose); }
@@ -362,15 +403,41 @@
     font-family: 'Playfair Display', serif;
     font-size: 1.3rem;
     color: var(--cream);
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.8rem;
   }
+
+  .timeline-img {
+    width: 100%;
+    max-width: 450px;
+    height: 280px;
+    margin: 1.5rem 0;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+  .timeline-img:hover {
+    transform: scale(1.02);
+    border-color: var(--rose);
+  }
+  .timeline-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.9) contrast(1.05);
+    display: block;
+  }
+
   .timeline-desc {
     color: rgba(253,246,240,0.6);
     font-style: italic;
     line-height: 1.7;
     font-size: 1rem;
+    max-width: 600px;
   }
 
+  /* Countdown Grid */
   .countdown-wrap { text-align: center; margin-top: 3rem; }
   .countdown-grid {
     display: flex;
@@ -410,6 +477,7 @@
     display: block;
   }
 
+  /* Footer */
   footer {
     text-align: center;
     padding: 4rem 2rem;
@@ -452,12 +520,21 @@
     .letter-wrap { padding: 2rem 1.5rem; }
     .timeline { padding-left: 1rem; }
     .moon { width: 70px; height: 70px; top: 5%; right: 5%; }
+    .timeline-img { height: 200px; }
     body { cursor: auto; }
     .cursor, .cursor-ring { display: none; }
   }
 </style>
 </head>
 <body>
+
+<audio id="romanticMusic" loop>
+    <source src="photograph.mp3" type="audio/mpeg">
+</audio>
+
+<div class="music-control" id="musicToggle" title="Play Music">
+    <span id="musicIcon">🎵</span>
+</div>
 
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
@@ -485,10 +562,10 @@
       <p class="card-text">The conversations that stretch past midnight, where we forget time exists and just… exist together.</p>
     </div>
     <div class="memory-card reveal">
-  <span class="card-emoji">☕</span>
-  <div class="card-title">Playing Games</div>
-  <p class="card-text">Those games where it's just us, laughing, teasing, and getting competitive — turning every match into a memory I never want to forget.</p>
-</div>
+      <span class="card-emoji">☕</span>
+      <div class="card-title">Playing Games</div>
+      <p class="card-text">Those games where it's just us, laughing, teasing, and getting competitive — turning every match into a memory.</p>
+    </div>
     <div class="memory-card reveal">
       <span class="card-emoji">🎵</span>
       <div class="card-title">Our Playlist</div>
@@ -525,7 +602,6 @@
     <p class="letter-text">
       Bubbyy, loving you has become the most natural and beautiful part of my life, like breathing without even thinking about it. Every little thing you do, from your laugh to the way you care, makes my world softer and brighter. In just one month, you’ve given me a kind of happiness I didn’t even know I was missing. I find comfort in you, in us, and in the quiet moments we share that mean more than words ever could. No matter where life takes us, I will stay by your side, loving you, and growing with you every single day.
       This is just the beginning of our own chapter bb, let's embrace it fully and enjoy every seconds together. I love you, bb💗!
-
     </p>
     <span class="letter-sign">Forever yours 🌹</span>
   </div>
@@ -541,30 +617,43 @@
   <span class="section-label">our story</span>
   <h2 class="section-title">The <em>Milestones</em></h2>
   <div class="timeline">
+    
     <div class="timeline-item reveal">
       <div class="timeline-dot"></div>
       <div class="timeline-date">The Beginning</div>
       <div class="timeline-title">When It All Started</div>
+      <div class="timeline-img">
+        <img src="img1.jpg" alt="First Memory"> </div>
       <p class="timeline-desc">Nervous butterflies. Overthought texts. The giddy rush of realizing someone might be becoming your favorite person.</p>
     </div>
+
     <div class="timeline-item reveal">
       <div class="timeline-dot"></div>
       <div class="timeline-date">Getting Comfortable</div>
       <div class="timeline-title">When We Stopped Pretending</div>
+      <div class="timeline-img">
+        <img src="img2.jpg" alt="Second Memory"> </div>
       <p class="timeline-desc">The masks came off. Ugly laughs. Bad days shared. And somehow, it only made everything more beautiful.</p>
     </div>
+
     <div class="timeline-item reveal">
       <div class="timeline-dot"></div>
       <div class="timeline-date">The Real Thing</div>
       <div class="timeline-title">When I Knew</div>
+      <div class="timeline-img">
+        <img src="img3.jpg" alt="Third Memory"> </div>
       <p class="timeline-desc">There was a moment — small and quiet — where I thought: oh. This is it. This is the right person for me.</p>
     </div>
+
     <div class="timeline-item reveal">
       <div class="timeline-dot"></div>
       <div class="timeline-date">Every Day</div>
       <div class="timeline-title">This Exact Moment</div>
+      <div class="timeline-img">
+        <img src="img4.jpg" alt="Fourth Memory"> </div>
       <p class="timeline-desc">Still choosing each other. Still learning. Still the best decision I've ever made.</p>
     </div>
+
   </div>
 </section>
 
@@ -584,6 +673,23 @@
 </footer>
 
 <script>
+  // --- Music Functionality ---
+  const music = document.getElementById('romanticMusic');
+  const musicToggle = document.getElementById('musicToggle');
+  const musicIcon = document.getElementById('musicIcon');
+
+  musicToggle.addEventListener('click', () => {
+    if (music.paused) {
+      music.play();
+      musicIcon.textContent = '⏸'; // Change icon to pause
+      musicToggle.classList.add('playing');
+    } else {
+      music.pause();
+      musicIcon.textContent = '🎵'; // Change icon back to music
+      musicToggle.classList.remove('playing');
+    }
+  });
+
   // Custom cursor
   const cursor = document.getElementById('cursor');
   const ring = document.getElementById('cursorRing');
@@ -622,23 +728,21 @@
     document.body.appendChild(p);
   }
 
-    // Time grid with static values
-const grid = document.getElementById('timeGrid');
-const timeItems = [
-  { num: 1, label: 'Month' },
-  { num: 4, label: 'Weeks' },
-  { num: 31, label: 'Days' },
-  { num: 744, label: 'Hours' }
-];
+  // Time grid with static values
+  const grid = document.getElementById('timeGrid');
+  const timeItems = [
+    { num: 1, label: 'Month' },
+    { num: 4, label: 'Weeks' },
+    { num: 31, label: 'Days' },
+    { num: 744, label: 'Hours' }
+  ];
 
-timeItems.forEach(item => {
-  const box = document.createElement('div');
-  box.className = 'count-box';
-  box.innerHTML = `<span class="count-num">${item.num}</span><span class="count-label">${item.label}</span>`;
-  grid.appendChild(box);
-});
-
-
+  timeItems.forEach(item => {
+    const box = document.createElement('div');
+    box.className = 'count-box';
+    box.innerHTML = `<span class="count-num">${item.num}</span><span class="count-label">${item.label}</span>`;
+    grid.appendChild(box);
+  });
 
   // Scroll reveal
   const reveals = document.querySelectorAll('.reveal');
